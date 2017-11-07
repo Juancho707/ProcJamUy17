@@ -1904,8 +1904,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     RoomClass: 0
-    RightEdge: 3
-    LeftEdge: 4
+    RightEdge: 4
+    LeftEdge: 2
     TopEdge: 0
     BottomEdge: 0
     IsFlipped: 0

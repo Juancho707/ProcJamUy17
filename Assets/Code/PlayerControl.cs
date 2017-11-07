@@ -29,7 +29,7 @@ public class PlayerControl : MonoBehaviour
             Attack();
         }
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButton("Jump"))
         {
             Jump();
         }
@@ -86,6 +86,7 @@ public class PlayerControl : MonoBehaviour
     void Jump()
     {
         playerAnim.SetTrigger("jump");
+        gameObject.transform.Translate(Vector2.up * JumpForce * Time.deltaTime);
     }
 
     void Roll()
