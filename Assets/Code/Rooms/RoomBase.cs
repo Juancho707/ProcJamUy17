@@ -10,4 +10,10 @@ public class RoomBase : MonoBehaviour
     {
 		
 	}
+
+    public void Flip()
+    {
+        this.Data.IsFlipped = true;
+        this.transform.localScale = new Vector3(-1, 1, 1);
+    }
 }
