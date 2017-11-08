@@ -29,7 +29,7 @@ public class CellStarter : MonoBehaviour
 
     void CalculateAndPlaceRoom(CellStartData data)
     {
-        if (!PlaceEndRoom(data))
+        if (!PlaceStartRoom(data) && !PlaceEndRoom(data))
         {
             if (data.FromDir == Direction.Left || data.FromDir == Direction.Right)
             {
@@ -218,16 +218,61 @@ public class CellStarter : MonoBehaviour
         return false;
     }
 
-    void BuildBorder(CellStartData data)
+    bool PlaceStartRoom(CellStartData data)
     {
-        if (data.X == 0)
+        if (CellStartData.Level != 1)
         {
-            Instantiate(LeftBorder, this.transform);
+            return false;
         }
 
-        if (data.X == data.Settings.LevelWidth - 1)
+        if (data.Y == 0 && data.X == 0)
         {
-            Instantiate(RightBorder, this.transform);
+            if (CellStartData.Level == 1)
+            {
+                var rmPf = data.Repo.Where(c => c.GetComponent<RoomBase>().Data.RoomClass == RoomType.Entrance)
+                    .PickOne();
+                var room = PlaceRoom(rmPf, data.FromDir, EdgeType.A);
+
+                data.NextDir = Direction.Right;
+                nextCellData.X = data.X + 1;
+                nextCellData.FromEdge = room.Data.RealRightEdge;
+                nextCellData.FromDir = data.NextDir;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void BuildBorder(CellStartData data)
+    {
+        if (CellStartData.Level == 1)
+        {
+            if (data.Y != 0 || data.X != 0)
+            {
+                if (data.X == 0)
+                {
+                    Instantiate(LeftBorder, this.transform);
+                }
+
+                if (data.X == data.Settings.LevelWidth - 1)
+                {
+                    Instantiate(RightBorder, this.transform);
+                }
+            }
+        }
+        else
+        {
+            if (data.X == 0)
+            {
+                Instantiate(LeftBorder, this.transform);
+            }
+
+            if (data.X == data.Settings.LevelWidth - 1)
+            {
+                Instantiate(RightBorder, this.transform);
+            }
         }
     }
 }

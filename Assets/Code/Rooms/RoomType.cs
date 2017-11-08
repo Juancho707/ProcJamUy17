@@ -2,5 +2,6 @@
 { 
     Horizontal,
     Vertical,
-    BossChamber
+    BossChamber,
+    Entrance
 }
