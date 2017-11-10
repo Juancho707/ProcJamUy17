@@ -359,9 +359,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Stats:
-    Acceleration: 2
-    MaxSpeed: 10
-    JumpAcceleration: 3
+    Acceleration: 0.05
+    MaxSpeed: 0.2
+    JumpAcceleration: 0.2
     JumpDuration: 0.5
   CharacterHeight: 1
 --- !u!70 &839845117
