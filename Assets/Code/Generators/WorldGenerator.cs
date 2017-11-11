@@ -6,29 +6,22 @@ using UnityEngine;
 
 public class WorldGenerator : MonoBehaviour
 {
-    private int zoneAmount;
-    private int maxTilesPerZone;
-    private WorldCellType[,] worldMatrix;
+    public WorldCellType[,] worldMatrix;
     private List<Tuple<int, int>> zoneLocations;
-    private int worldWidthAndHeight;
     private Tuple<int, int> playerInitialPosition;
     private readonly object zoneLocationsLock = new object();
     private int zonesReachedByPaths;
 
-    void Start()
+    public void InitializeGeneration(int zoneAmount, int maxTilesPerZone) //10, 10
     {
-        zoneAmount = 10;
-        zonesReachedByPaths = 0;
-        maxTilesPerZone = 10;
         // Find out how many tiles there are according to how many tiles there should be per zone
         // (the zone itself and border tiles to separate it from other zones). Then, find the square root of 
         // that (always thinking about generating a square matrix/map) and approximate that number to the nearest
         // upper integer. Then, construct a square matrix with that number.
         // This is to not use a zoneAmount ** 2 matrix, but optimize it a bit.
-        worldWidthAndHeight = (int) Math.Ceiling(Math.Sqrt(zoneAmount * maxTilesPerZone));
-        Debug.Log(string.Format("Dimension n was found to be {0}", worldWidthAndHeight));
-
+        int worldWidthAndHeight = (int) Math.Ceiling(Math.Sqrt(zoneAmount * maxTilesPerZone));
         worldMatrix = new WorldCellType[worldWidthAndHeight, worldWidthAndHeight];
+        Debug.Log(string.Format("Dimension n was found to be {0}", worldWidthAndHeight));
         // Initialize world.
         // Generate available positions
         List<Tuple<int, int>> availablePositions = new List<Tuple<int, int>>();
@@ -75,6 +68,7 @@ public class WorldGenerator : MonoBehaviour
             worldMatrix[zoneLocation.Item1, zoneLocation.Item2] = WorldCellType.Zone;
             Debug.Log(TupleHelper.GetStringRepresentationOfTuple(zoneLocation, "zoneLocation"));
         }
+        zonesReachedByPaths = 0;
         // Generate initial path from player to its nearest location.
         Tuple<int, int> nearestLocationToPlayer =
             WorldGeneratorHelper.FindNearestLocationInLocations(playerInitialPosition, zoneLocations);
@@ -85,11 +79,12 @@ public class WorldGenerator : MonoBehaviour
         // From this nearest location onwards, auto-generate paths.
         zoneLocations.Remove(nearestLocationToPlayer);
         var currentZone = nearestLocationToPlayer; // alias
-        StartCoroutine(GeneratePathsRecursively(currentZone, zoneLocations, 1));
+        var zoneAmountToReach = 1;
+        StartCoroutine(GeneratePathsRecursively(currentZone, zoneLocations, zoneAmountToReach, zoneAmount));
     }
 
     IEnumerator GeneratePathsRecursively(Tuple<int, int> currentZone, List<Tuple<int, int>> availableZones,
-        int zoneAmountToReach)
+        int zoneAmountToReach, int zoneAmount)
     {
         if (availableZones.Count > 0)
         {
@@ -113,17 +108,13 @@ public class WorldGenerator : MonoBehaviour
                     zonesReachedByPaths++;
                     if (zonesReachedByPaths == zoneAmount)
                     {
-                        List<string> worldStringRepresentation =
-                            WorldGeneratorHelper.GetWorldStringRepresentation(worldMatrix);
-                        foreach (string row in worldStringRepresentation)
-                        {
-                            Debug.Log(row);
-                        }
+                        Debug.Log("Triggering world generation end");
+                        EventManager.TriggerEvent(Events.worldGenerationEnd);
                     }
                     else
                     {
                         yield return StartCoroutine(
-                            GeneratePathsRecursively(currentZone, availableZones, zoneAmountToReach));
+                            GeneratePathsRecursively(currentZone, availableZones, zoneAmountToReach, zoneAmount));
                     }
                 }
             }
