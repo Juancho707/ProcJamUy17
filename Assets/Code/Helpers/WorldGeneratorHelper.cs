@@ -62,4 +62,40 @@ public static class WorldGeneratorHelper
         }
         return nearestLocation;
     }
+
+    public static bool IsPositionAboveAnother(Tuple<int, int> first, Tuple<int, int> second)
+    {
+        return first.Item1 < second.Item1;
+    }
+
+    public static bool IsPositionOnRightSideOfAnother(Tuple<int, int> first, Tuple<int, int> second)
+    {
+        return first.Item2 > second.Item2;
+    }
+
+    public static int PathNeighborCellsForPosition(Tuple<int, int> newPosition, WorldCellType[,] worldMatrix)
+    {
+        int pathNeighborCellsForPosition = 0;
+        for (int i = -1; i <= 1; i += 2)
+        {
+            if (IsInSquareMatrixRange(newPosition.Item1 + i, worldMatrix) &&
+                worldMatrix[newPosition.Item1 + i, newPosition.Item2] == WorldCellType.Path)
+                pathNeighborCellsForPosition++;
+            if (IsInSquareMatrixRange(newPosition.Item2 + i, worldMatrix) &&
+                worldMatrix[newPosition.Item1, newPosition.Item2 + i] == WorldCellType.Path)
+                pathNeighborCellsForPosition++;
+        }
+        return pathNeighborCellsForPosition;
+    }
+
+    public static bool IsInSquareMatrixRange(int index, WorldCellType[,] matrix)
+    {
+        return index >= 0 && index < matrix.GetLength(0);
+    }
+
+    public static bool AllZonesAreReachedByPaths(WorldCellType[,] localWorldMatrix)
+    {
+    // TODO implement this.
+        throw new NotImplementedException();
+    }
 }

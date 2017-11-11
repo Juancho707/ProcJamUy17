@@ -12,7 +12,7 @@ public class Tuple<T1, T2>
 
     public T2 Item2 { get; set; }
     
-    public bool Equals(Object obj) 
+    public override bool Equals(Object obj) 
     {
         // Check for null values and compare run-time types.
         if (obj == null || GetType() != obj.GetType()) 

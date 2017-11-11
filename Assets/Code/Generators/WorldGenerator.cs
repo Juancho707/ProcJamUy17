@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-
 public class WorldGenerator : MonoBehaviour
 {
     private int zoneAmount;
@@ -60,6 +59,7 @@ public class WorldGenerator : MonoBehaviour
             {
                 for (int j = chosenPosition.Item2 - 1; j <= chosenPosition.Item2 + 1; j++)
                 {
+                    // Attempt to find it among availablePositions, since one of them could be out of the matrix' bounds.
                     Tuple<int, int> adjacentPosition =
                         availablePositions.FirstOrDefault(t => t.Item1 == i && t.Item2 == j);
                     if (adjacentPosition != null)
@@ -73,10 +73,13 @@ public class WorldGenerator : MonoBehaviour
         foreach (var zoneLocation in zoneLocations)
         {
             worldMatrix[zoneLocation.Item1, zoneLocation.Item2] = WorldCellType.Zone;
+            Debug.Log(TupleHelper.GetStringRepresentationOfTuple(zoneLocation, "zoneLocation"));
         }
         // Generate initial path from player to its nearest location.
         Tuple<int, int> nearestLocationToPlayer =
             WorldGeneratorHelper.FindNearestLocationInLocations(playerInitialPosition, zoneLocations);
+        Debug.Log(TupleHelper.GetStringRepresentationOfTuple(playerInitialPosition, "playerInitialPosition"));
+        Debug.Log(TupleHelper.GetStringRepresentationOfTuple(nearestLocationToPlayer, "nearestLocationToPlayer"));
         GeneratePathBetweenLocations(playerInitialPosition, nearestLocationToPlayer);
         zonesReachedByPaths++;
         // From this nearest location onwards, auto-generate paths.
@@ -93,7 +96,7 @@ public class WorldGenerator : MonoBehaviour
             List<Tuple<int, int>> nearestZones = new List<Tuple<int, int>>();
             for (int i = 0; i < zoneAmountToReach; i++)
             {
-                Tuple<int, int> nearestZone = null;
+                Tuple<int, int> nearestZone;
                 lock (zoneLocationsLock)
                 {
                     nearestZone = WorldGeneratorHelper.FindNearestLocationInLocations(currentZone, availableZones);
@@ -108,7 +111,6 @@ public class WorldGenerator : MonoBehaviour
                 {
                     GeneratePathBetweenLocations(currentZone, nearestZone);
                     zonesReachedByPaths++;
-                    Debug.Log(string.Format("zonesReachedByPaths is " + zonesReachedByPaths));
                     if (zonesReachedByPaths == zoneAmount)
                     {
                         List<string> worldStringRepresentation =
@@ -135,13 +137,14 @@ public class WorldGenerator : MonoBehaviour
         {
             var m = startCopy.Item1;
             var n = startCopy.Item2;
-            if (worldMatrix[m, n] != WorldCellType.PlayerInitialPosition) worldMatrix[m, n] = WorldCellType.Path;
+            if (worldMatrix[m, n] == WorldCellType.None) worldMatrix[m, n] = WorldCellType.Path;
             MoveLocationTowardsDestination(startCopy, end);
         }
     }
 
     private void MoveLocationTowardsDestination(Tuple<int, int> origin, Tuple<int, int> destination)
     {
+        // TODO maybe determine if a horizontal/vertical movement is attempted according to some random variable set at the start of the script.
         if (origin.Item1 != destination.Item1)
         {
             if (origin.Item1 > destination.Item1) origin.Item1--;
