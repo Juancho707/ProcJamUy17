@@ -19,9 +19,20 @@ public class CharacterMovementBase : MonoBehaviour
     {
         get
         {
+            Physics2D.queriesStartInColliders = false;              //Esto está para que al tirar el Raycast no le dé bola al propio collider del objeto
             return Physics2D.Raycast(this.transform.position, Vector2.down, CharacterHeight);
         }
     }
+
+    private bool AgainstWall
+    {
+        get
+        {
+            Physics2D.queriesStartInColliders = false;
+            return (Physics2D.Raycast(this.transform.position, Vector2.left, CharacterHeight) || Physics2D.Raycast(this.transform.position, Vector2.right, CharacterHeight));
+        }
+    }
+
 
     void Start()
     {
@@ -39,7 +50,20 @@ public class CharacterMovementBase : MonoBehaviour
                 currentSpeed = currentSpeed < 0 ? -Stats.MaxSpeed : Stats.MaxSpeed;
             }
 
-            animator.SetBool("isWalking", true);
+            if(IsGrounded)
+            {
+                animator.SetBool("isWalking", true);
+                animator.SetBool("onWall", false);
+            }
+            else
+            {
+                if(AgainstWall)
+                {
+                    //Debug.Log("Against wall");
+                    animator.SetBool("onWall", true);
+                }
+            }
+            
             if (hAxis > 0)
             {
 
@@ -53,6 +77,7 @@ public class CharacterMovementBase : MonoBehaviour
         else
         {
             animator.SetBool("isWalking", false);
+            animator.SetBool("onWall", false);
             if (currentSpeed > 0)
             {
                 currentSpeed -= Stats.Acceleration;
@@ -110,4 +135,10 @@ public class CharacterMovementBase : MonoBehaviour
     {
         animator.SetTrigger("roll");
     }
+
+    public void WallJump()
+    {
+        
+    }
+
 }
