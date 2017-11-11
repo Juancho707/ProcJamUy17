@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class WorldGenerator : MonoBehaviour
+public class WorldMatrixConstructor : MonoBehaviour
 {
-    public WorldCellType[,] worldMatrix;
+    public WorldCellType[,] WorldMatrix;
     private List<Tuple<int, int>> zoneLocations;
     private Tuple<int, int> playerInitialPosition;
     private readonly object zoneLocationsLock = new object();
@@ -20,8 +20,7 @@ public class WorldGenerator : MonoBehaviour
         // upper integer. Then, construct a square matrix with that number.
         // This is to not use a zoneAmount ** 2 matrix, but optimize it a bit.
         int worldWidthAndHeight = (int) Math.Ceiling(Math.Sqrt(zoneAmount * maxTilesPerZone));
-        worldMatrix = new WorldCellType[worldWidthAndHeight, worldWidthAndHeight];
-        Debug.Log(string.Format("Dimension n was found to be {0}", worldWidthAndHeight));
+        WorldMatrix = new WorldCellType[worldWidthAndHeight, worldWidthAndHeight];
         // Initialize world.
         // Generate available positions
         List<Tuple<int, int>> availablePositions = new List<Tuple<int, int>>();
@@ -29,7 +28,7 @@ public class WorldGenerator : MonoBehaviour
         {
             for (int j = 0; j < worldWidthAndHeight; j++)
             {
-                worldMatrix[i, j] = 0;
+                WorldMatrix[i, j] = 0;
                 availablePositions.Add(Tuple.Create(i, j));
             }
         }
@@ -39,7 +38,7 @@ public class WorldGenerator : MonoBehaviour
             (t.Item2 == 0 || t.Item2 == worldWidthAndHeight - 1));
         playerInitialPosition = possibleInitialPositionsForPlayer.PickOne();
         availablePositions.Remove(playerInitialPosition);
-        worldMatrix[playerInitialPosition.Item1, playerInitialPosition.Item2] = WorldCellType.PlayerInitialPosition;
+        WorldMatrix[playerInitialPosition.Item1, playerInitialPosition.Item2] = WorldCellType.PlayerInitialPosition;
         // Store zone locations in list.
         zoneLocations = new List<Tuple<int, int>>();
         // Keep adding zone locations until all have been created.
@@ -65,15 +64,12 @@ public class WorldGenerator : MonoBehaviour
         // Go through zone locations and update matrix.
         foreach (var zoneLocation in zoneLocations)
         {
-            worldMatrix[zoneLocation.Item1, zoneLocation.Item2] = WorldCellType.Zone;
-            Debug.Log(TupleHelper.GetStringRepresentationOfTuple(zoneLocation, "zoneLocation"));
+            WorldMatrix[zoneLocation.Item1, zoneLocation.Item2] = WorldCellType.Zone;
         }
         zonesReachedByPaths = 0;
         // Generate initial path from player to its nearest location.
         Tuple<int, int> nearestLocationToPlayer =
             WorldGeneratorHelper.FindNearestLocationInLocations(playerInitialPosition, zoneLocations);
-        Debug.Log(TupleHelper.GetStringRepresentationOfTuple(playerInitialPosition, "playerInitialPosition"));
-        Debug.Log(TupleHelper.GetStringRepresentationOfTuple(nearestLocationToPlayer, "nearestLocationToPlayer"));
         GeneratePathBetweenLocations(playerInitialPosition, nearestLocationToPlayer);
         zonesReachedByPaths++;
         // From this nearest location onwards, auto-generate paths.
@@ -108,7 +104,6 @@ public class WorldGenerator : MonoBehaviour
                     zonesReachedByPaths++;
                     if (zonesReachedByPaths == zoneAmount)
                     {
-                        Debug.Log("Triggering world generation end");
                         EventManager.TriggerEvent(Events.worldGenerationEnd);
                     }
                     else
@@ -128,7 +123,7 @@ public class WorldGenerator : MonoBehaviour
         {
             var m = startCopy.Item1;
             var n = startCopy.Item2;
-            if (worldMatrix[m, n] == WorldCellType.None) worldMatrix[m, n] = WorldCellType.Path;
+            if (WorldMatrix[m, n] == WorldCellType.None) WorldMatrix[m, n] = WorldCellType.Path;
             MoveLocationTowardsDestination(startCopy, end);
         }
     }
