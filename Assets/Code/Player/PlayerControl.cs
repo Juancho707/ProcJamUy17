@@ -5,12 +5,12 @@ using UnityEngine.AI;
 
 public class PlayerControl : MonoBehaviour
 {
-    private CharacterMovementBase movement;
+    private CharacterAdvancedMovement movement;
     
     // Use this for initialization
     void Start()
     {
-        movement = this.GetComponent<CharacterMovementBase>();
+        movement = this.GetComponent<CharacterAdvancedMovement>();
     }
 
     void FixedUpdate()
@@ -22,14 +22,20 @@ public class PlayerControl : MonoBehaviour
             movement.Attack();
         }
 
-        if (Input.GetButton("Jump"))
+        if(Input.GetButton("Jump") && !movement.AgainstWall)
         {
             movement.Jump();
+        }
+        else
+        {
+            if(Input.GetButton("Jump"))
+                movement.WallJump();
         }
 
         if (Input.GetButtonDown("Roll"))
         {
             movement.Roll();
         }
+
     }
 }

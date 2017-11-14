@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 1555878347}
   - component: {fileID: 1555878346}
   - component: {fileID: 1555878345}
-  - component: {fileID: 1555878344}
+  - component: {fileID: 1555878348}
   - component: {fileID: 1555878343}
   - component: {fileID: 1555878342}
   m_Layer: 0
@@ -322,23 +322,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1555878344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1555878341}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79269d4461bd49aaa60a184f08b53c42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Stats:
-    Acceleration: 0.05
-    MaxSpeed: 0.2
-    JumpAcceleration: 0.2
-    JumpDuration: 0.5
-  CharacterHeight: 1
 --- !u!114 &1555878345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +365,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1555878348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1555878341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c531cc6ec830ef942bec7cb15eb732a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Stats:
+    Acceleration: 0.05
+    MaxSpeed: 0.2
+    JumpAcceleration: 0.2
+    JumpDuration: 0.5
+  CharacterHeight: 1
+  rollForce: 30
+  rollTime: 0
+  MaxRollTime: 0.1
+  IsRolling: 0
 --- !u!1 &1884122633
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,11 +9,11 @@ public class CharacterMovementBase : MonoBehaviour
     public float CharacterHeight;
 
     private float currentSpeed;
-    private float jumpElapsed;
+    protected float jumpElapsed;
 
-    private bool facingRight = true;
-    private Animator animator;
-    private SpriteRenderer bodySprite;
+    protected bool facingRight = true;
+    protected Animator animator;
+    protected SpriteRenderer bodySprite;
 
     private bool IsGrounded
     {
@@ -24,12 +24,12 @@ public class CharacterMovementBase : MonoBehaviour
         }
     }
 
-    private bool AgainstWall
+    public bool AgainstWall
     {
         get
         {
             Physics2D.queriesStartInColliders = false;
-            return (Physics2D.Raycast(this.transform.position, Vector2.left, CharacterHeight) || Physics2D.Raycast(this.transform.position, Vector2.right, CharacterHeight));
+            return (Physics2D.Raycast(this.transform.position, Vector2.left, 0.5f) || Physics2D.Raycast(this.transform.position, Vector2.right, 0.5f));
         }
     }
 
@@ -106,6 +106,15 @@ public class CharacterMovementBase : MonoBehaviour
         {
             bodySprite.flipX = true;
         }
+
+        if(IsGrounded)
+        {
+            animator.SetBool("onAir", false);
+        }
+        else
+        {
+            animator.SetBool("onAir", true);
+        }
     }
 
     public void Attack()
@@ -131,14 +140,6 @@ public class CharacterMovementBase : MonoBehaviour
         }
     }
 
-    public void Roll()
-    {
-        animator.SetTrigger("roll");
-    }
-
-    public void WallJump()
-    {
-        
-    }
+    
 
 }
